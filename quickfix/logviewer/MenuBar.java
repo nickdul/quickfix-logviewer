@@ -18,17 +18,10 @@
 ****************************************************************************/
 
 package quickfix.logviewer;
-import java.awt.Component;
-import java.awt.HeadlessException;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,6 +39,7 @@ public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 	private JMenu viewMenu = new JMenu("View");
 	public static final JMenuItem viewAutosizeColumns = new JMenuItem( "Autosize Columns" );
 	public static final JMenuItem viewAutosizeAndHideColumns = new JMenuItem( "Autosize And Hide Columns" );
+	public static final JMenuItem showHideColumns = new JMenuItem( "Show/Hide Columns" );
 	private JMenu viewExportMenu = new JMenu( "Export" );
 	public static final JMenuItem viewExportFIX = new JMenuItem( "To FIX" );
 	public static final JMenuItem viewExportXML = new JMenuItem( "To XML" );
@@ -100,6 +94,7 @@ public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 		
 		viewMenu.add( viewAutosizeColumns );
 		viewMenu.add( viewAutosizeAndHideColumns );
+		viewMenu.add( showHideColumns );
 		viewMenu.addSeparator();
 		viewExportMenu.add( viewExportFIX );
 		viewExportMenu.add( viewExportXML );
@@ -175,6 +170,7 @@ public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 			fileTrace.addActionListener( l );
 			viewAutosizeColumns.addActionListener( l );
 			viewAutosizeAndHideColumns.addActionListener( l );
+			showHideColumns.addActionListener( l );
 			viewExportFIX.addActionListener( l );
 			viewExportXML.addActionListener( l );
 			viewExportCSV.addActionListener( l );

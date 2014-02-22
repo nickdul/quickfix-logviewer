@@ -18,17 +18,17 @@
 ****************************************************************************/
 
 package quickfix.logviewer;
-import quickfix.*;
+
+import quickfix.DataDictionary;
 
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
-
-import javax.swing.UIManager;
 
 public class Main {
 
 	static {
 		TimeZone.setDefault( new SimpleTimeZone(SimpleTimeZone.UTC_TIME,"GMT") );
+        //System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 	}
 	
 	public static void main( String[] args ) throws Exception {
@@ -45,7 +45,8 @@ public class Main {
 			new DataDictionary( dictionaryFileName );
 		
 		try {
-			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			//UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+		//	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch( Exception e ) {
 		}
 		
