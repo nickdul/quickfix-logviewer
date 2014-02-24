@@ -49,7 +49,7 @@ public class SplitPane extends JSplitPane
 	private MessagesTable currentTable = null;    //
 	private MessagesTableModel currentModel = null;
 	private JTabbedPane upperTabbedPane = null;
-	private DataDictionary dataDictionary = null;
+	private DefaultDataDictionaryAccess dataDictionary = null;
 	private Timer tracer = null;
 
 	private Message message = null;
@@ -62,7 +62,7 @@ public class SplitPane extends JSplitPane
 		MessageTree aMessageTree,
 		JTabbedPane aUpperTabbedPane,
 		JTabbedPane aLowerTabbedPane,
-		DataDictionary aDataDictionary ) {
+        DefaultDataDictionaryAccess aDataDictionary ) {
 		super( JSplitPane.VERTICAL_SPLIT, aUpperTabbedPane, aLowerTabbedPane );
 
 		frame = aFrame;
@@ -156,7 +156,9 @@ public class SplitPane extends JSplitPane
 
 					if( source == MenuBar.fileOpen ) {
 						openFile();
-					} else if( source == MenuBar.fileExportFIX ) {
+                    } else if( source == MenuBar.openDD ) {
+                        openDD();
+                    } else if( source == MenuBar.fileExportFIX ) {
 						exportFile( source );
 					} else if( source == MenuBar.fileExportXML ) {
 						exportFile( source );
@@ -188,7 +190,30 @@ public class SplitPane extends JSplitPane
 		}
 	}
 
-	private void openFile() {
+    private void openDD()
+    {
+        FileOpenDialog dialog = new FileOpenDialog( frame );
+        dialog.setVisible( true );
+        final File file = dialog.getFile();
+        dialog.dispose();
+        try {
+            DataDictionary d = new DataDictionary(file.getAbsolutePath());
+            dataDictionary.setDataDictionary(d);
+            currentModel.viewAll();
+//            TableColumnModel columnModel = currentTable.getColumnModel();
+//            int columnCount = columnModel.getColumnCount();
+//            for (int i = 0; i < columnCount; i++) {
+//                columnModel.getColumn(i).setHeaderValue(columnModel.getColumn(i).getHeaderValue());
+//            }
+//            currentModel.fireTableChanged(new TableModelEvent(currentModel, 0, currentModel.getRowCount()));
+//            currentTable.repaint();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void openFile() {
 		FileOpenDialog dialog = new FileOpenDialog( frame );
 		dialog.setVisible( true );
 		final File file = dialog.getFile();
@@ -266,7 +291,7 @@ public class SplitPane extends JSplitPane
 			filter.add( fieldFilter );
 
 		CustomFilterDialog dialog =
-			new CustomFilterDialog( frame, filter, currentModel.getTags(), dataDictionary );
+			new CustomFilterDialog( frame, filter, currentModel.getTags(), dataDictionary.getDataDictionary() );
 
 		dialog.setVisible( true );
 		filter = dialog.getFilter();

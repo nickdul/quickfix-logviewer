@@ -34,7 +34,7 @@ public class LogFile {
 	private File logFile = null;
 	private FileReader logFileReader = null;
 	private BufferedReader bufferedLogFileReader = null;
-	private DataDictionary dataDictionary = null;
+	private DataDictionaryAccess dataDictionary = null;
 	private ArrayList messages = new ArrayList();
 	private ArrayList invalidMessages = new ArrayList();
 	private ArrayList newMessages = new ArrayList();
@@ -43,13 +43,13 @@ public class LogFile {
 	private int type = TYPE_UNKNOWN;
 	private char delimiter = 0;
 		
-	public LogFile( String name, DataDictionary aDataDictionary ) throws FileNotFoundException {
+	public LogFile( String name, DataDictionaryAccess aDataDictionary ) throws FileNotFoundException {
 		logFile = new File(name);
 		dataDictionary = aDataDictionary;
 		initialize();
 	}
 	
-	public LogFile( File file, DataDictionary aDataDictionary ) throws FileNotFoundException {
+	public LogFile( File file, DataDictionaryAccess aDataDictionary ) throws FileNotFoundException {
 		logFile = file;
 		dataDictionary = aDataDictionary;
 		initialize();
@@ -288,7 +288,7 @@ public class LogFile {
 			if( dataDictionary == null )
 				return new Message( line, false );
 			else
-				return new Message( line, dataDictionary, false );
+				return new Message( line, dataDictionary.getDataDictionary(), false );
 		} catch( quickfix.InvalidMessage e1 ) {
 			return null;
 		} catch( ArrayIndexOutOfBoundsException e2 ) {

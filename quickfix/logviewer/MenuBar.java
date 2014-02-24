@@ -29,6 +29,7 @@ import java.util.Iterator;
 public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 	private JMenu fileMenu = new JMenu("File");
 	public static final JMenuItem fileOpen = new JMenuItem( "Open" );
+	public static final JMenuItem openDD = new JMenuItem( "Open Data Dictionary" );
 	public static final JMenuItem fileClose = new JMenuItem( "Close" );
 	private JMenu fileExportMenu = new JMenu( "Export" );
 	public static final JMenuItem fileExportFIX = new JMenuItem( "To FIX" );
@@ -79,9 +80,9 @@ public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 	
 		int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 		fileOpen.setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_O, keyMask ) );
-		fileMenu.add( fileOpen );
-		fileClose.setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_W, keyMask ) );			
-		fileMenu.add( fileClose );
+		fileMenu.add(fileOpen);
+		fileMenu.add( openDD );
+		fileClose.setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_W, keyMask ) );			fileMenu.add( fileClose );
 		fileMenu.addSeparator();
 		fileExportMenu.add( fileExportFIX );
 		fileExportMenu.add( fileExportXML );
@@ -163,6 +164,7 @@ public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 	public void addActionListener( ActionListener l ) {
 		if( l == this ) {
 			fileOpen.addActionListener( l );
+			openDD.addActionListener( l );
 			fileClose.addActionListener( l );
 			fileExportFIX.addActionListener( l );
 			fileExportXML.addActionListener( l );

@@ -50,7 +50,7 @@ public class Main {
 		} catch( Exception e ) {
 		}
 		
-		Frame frame = new Frame( dataDictionary );
+		Frame frame = new Frame( new DefaultDataDictionaryAccess(dataDictionary));
 		frame.setVisible( true );
  	}
 }

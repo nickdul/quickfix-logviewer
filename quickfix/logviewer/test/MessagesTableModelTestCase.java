@@ -19,27 +19,28 @@
 
 package quickfix.logviewer.test;
 
-import java.util.ArrayList;
-
+import junit.framework.TestCase;
 import quickfix.DataDictionary;
+import quickfix.logviewer.DefaultDataDictionaryAccess;
 import quickfix.logviewer.FieldFilter;
 import quickfix.logviewer.LogFile;
 import quickfix.logviewer.MessagesTableModel;
 import quickfix.logviewer.ProgressBar;
 import quickfix.logviewer.ProgressBarPanel;
-import junit.framework.TestCase;
+
+import java.util.ArrayList;
 
 public class MessagesTableModelTestCase extends TestCase {
-	private DataDictionary dataDictionary = null;
+	private DefaultDataDictionaryAccess  dataDictionary = null;
 	private ProgressBarPanel progressBar = null;
 	
 	public MessagesTableModelTestCase() throws quickfix.ConfigError {
-		dataDictionary = new DataDictionary("lib/FIX44.xml");
+		dataDictionary = new DefaultDataDictionaryAccess(new DataDictionary("lib/FIX44.xml"));
 		progressBar = new ProgressBarPanel(new ProgressBar());
 	}
 	
 	public void testSetMessages() throws Exception {
-		LogFile logFile = new LogFile( "test.log", dataDictionary );
+        LogFile logFile = new LogFile( "test.log", dataDictionary );
 		ArrayList messages = logFile.parseMessages( progressBar, null, null );
 		MessagesTableModel tableModel = new MessagesTableModel( dataDictionary );
 		tableModel.setMessages( messages, progressBar );

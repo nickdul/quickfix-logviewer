@@ -18,6 +18,14 @@
 ****************************************************************************/
 
 package quickfix.logviewer;
+import quickfix.DataDictionary;
+import quickfix.FieldMap;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.StringField;
+import quickfix.field.MsgType;
+
+import javax.swing.table.AbstractTableModel;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,11 +34,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import quickfix.*;
-import quickfix.field.MsgType;
-
-import javax.swing.table.AbstractTableModel;
 
 public class MessagesTableModel extends AbstractTableModel {
 	private SortedSet tags = new TreeSet();
@@ -46,15 +49,15 @@ public class MessagesTableModel extends AbstractTableModel {
 	private ArrayList categoryMessages = new ArrayList();
 	private ArrayList filter = new ArrayList();
 	private String[] category = null;
-	private DataDictionary dataDictionary = null;
+	private DataDictionaryAccess dataDictionary = null;
 	private LogFile logFile = null;
 		
-	public MessagesTableModel( DataDictionary aDataDictionary ) {
+	public MessagesTableModel( DataDictionaryAccess aDataDictionary ) {
 		dataDictionary = aDataDictionary;
 		messages = allMessages;
 	}
 	
-	public MessagesTableModel( DataDictionary aDataDictionary, LogFile aLogFile ) {
+	public MessagesTableModel( DataDictionaryAccess aDataDictionary, LogFile aLogFile ) {
 		dataDictionary = aDataDictionary;
 		logFile = aLogFile;
 		messages = allMessages;
@@ -254,6 +257,7 @@ public class MessagesTableModel extends AbstractTableModel {
 			boolean addMessage = true;
 			Message message = (Message)i.next();
 			Iterator j = fields.iterator();
+            DataDictionary dataDictionary = this.dataDictionary.getDataDictionary();
 			while( j.hasNext() ) {
 				FieldFilter fieldFilter = (FieldFilter)j.next();
 				int tag = fieldFilter.getTag();
@@ -336,6 +340,7 @@ public class MessagesTableModel extends AbstractTableModel {
 
 	private String getDisplayString( Message message, int tag, boolean rawValue ) {
 		FieldMap map = message;
+        DataDictionary dataDictionary = this.dataDictionary.getDataDictionary();
 		if( dataDictionary.isHeaderField(tag) ) {
 			map = message.getHeader();
 		} else if( dataDictionary.isTrailerField(tag) ) {
@@ -398,7 +403,7 @@ public class MessagesTableModel extends AbstractTableModel {
 	
 	public String getColumnName(int column) {
 		Integer tag = (Integer)colToTag.get( new Integer(column) );
-		String fieldName = dataDictionary.getFieldName(tag.intValue());
+		String fieldName = dataDictionary.getDataDictionary().getFieldName(tag.intValue());
 		if( fieldName != null )
 			return fieldName + "(" + tag + ")";
 		else
@@ -470,7 +475,7 @@ public class MessagesTableModel extends AbstractTableModel {
 			Iterator i = messages.iterator();
 			while( i.hasNext() ) {
 				Message message = (Message)i.next();
-				String xmlMessage = message.toXML( dataDictionary );
+				String xmlMessage = message.toXML( dataDictionary.getDataDictionary() );
 				int encoding = xmlMessage.indexOf("?>");
 				if( encoding == -1 )
 					exportWriter.write( xmlMessage );

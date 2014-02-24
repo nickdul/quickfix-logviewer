@@ -18,17 +18,12 @@
 ****************************************************************************/
 
 package quickfix.logviewer;
-import java.awt.BorderLayout;
-import java.awt.HeadlessException;
-
-import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
-
-import quickfix.DataDictionary;
+import javax.swing.*;
+import java.awt.*;
 
 public class Frame extends JFrame {
 	
-	public Frame( DataDictionary dataDictionary ) throws HeadlessException {
+	public Frame( DefaultDataDictionaryAccess dataDictionary ) throws HeadlessException {
 		super();		
 		
 		ProgressBarPanel progressBarPanel = new ProgressBarPanel( new ProgressBar() );

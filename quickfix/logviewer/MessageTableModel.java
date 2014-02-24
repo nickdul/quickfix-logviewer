@@ -18,23 +18,28 @@
 ****************************************************************************/
 
 package quickfix.logviewer;
-import java.util.HashMap;
-import java.util.Iterator;
+import quickfix.DataDictionary;
+import quickfix.FieldMap;
+import quickfix.Group;
+import quickfix.IntField;
+import quickfix.Message;
+import quickfix.StringField;
 
 import javax.swing.table.AbstractTableModel;
-import quickfix.*;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class MessageTableModel extends AbstractTableModel {
 	private HashMap rowToField = new HashMap();
 	private HashMap rowToDepth = new HashMap();
 	private Message message = null;
-	private DataDictionary dataDictionary = null;
+	private DataDictionaryAccess dataDictionary = null;
 	private int rowCount = 0;
 	private int colCount = 0;
 	private int groupDepth = 0;
 	private int depth = 0;
 	
-	public MessageTableModel( Message aMessage, DataDictionary aDataDictionary ) {
+	public MessageTableModel( Message aMessage, DataDictionaryAccess aDataDictionary ) {
 		super();
 		
 		message = aMessage;
@@ -49,7 +54,7 @@ public class MessageTableModel extends AbstractTableModel {
 	}
 
 	DataDictionary getDataDictionary() {
-		return dataDictionary;
+		return dataDictionary.getDataDictionary();
 	}
 	
 	private void insertFieldMap(FieldMap fieldMap, int depth) {
@@ -107,10 +112,10 @@ public class MessageTableModel extends AbstractTableModel {
 		Integer tag = new Integer(field.getField());
 		switch( columnIndex ) {
 			case 0: return tag.toString();
-			case 1: return dataDictionary.getFieldName(tag.intValue());
+			case 1: return dataDictionary.getDataDictionary().getFieldName(tag.intValue());//
 			case 2: return "=";
 			case 3: return field.getValue();
-			case 4: return dataDictionary.hasFieldValue(tag.intValue()) ? dataDictionary.getValueName(tag.intValue(), field.getValue()) : "";
+			case 4: return dataDictionary.getDataDictionary().hasFieldValue(tag.intValue()) ? dataDictionary.getDataDictionary().getValueName(tag.intValue(), field.getValue()) : "";
 			default: return "";
 		}
 	}

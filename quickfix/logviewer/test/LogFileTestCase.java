@@ -19,21 +19,22 @@
 
 package quickfix.logviewer.test;
 
+import junit.framework.TestCase;
+import quickfix.DataDictionary;
+import quickfix.logviewer.DefaultDataDictionaryAccess;
+import quickfix.logviewer.LogFile;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import quickfix.DataDictionary;
-import quickfix.logviewer.LogFile;
-import junit.framework.TestCase;
-
 public class LogFileTestCase extends TestCase {
-	private DataDictionary dataDictionary = null;
+	private DefaultDataDictionaryAccess dataDictionary = null;
 	
 	public LogFileTestCase() throws quickfix.ConfigError {
-		dataDictionary = new DataDictionary("lib/FIX44.xml");
+        dataDictionary = new DefaultDataDictionaryAccess(new DataDictionary("lib/FIX44.xml"));
 	}
 	
 	public void testLoadFile() throws Exception {

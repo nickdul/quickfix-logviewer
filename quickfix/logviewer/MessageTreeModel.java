@@ -19,18 +19,16 @@
 
 package quickfix.logviewer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import quickfix.Group;
+import quickfix.IntField;
+import quickfix.Message;
+import quickfix.StringField;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-
-import quickfix.DataDictionary;
-import quickfix.StringField;
-import quickfix.Group;
-import quickfix.IntField;
-import quickfix.Message;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MessageTreeModel implements TreeModel {
 	private String root = new String("Message");
@@ -62,15 +60,15 @@ public class MessageTreeModel implements TreeModel {
 			Integer tag = new Integer(field.getField());
 			String result = new String();
 			result =
-				dataDictionary.getFieldName(tag.intValue())
+				dataDictionary.getDataDictionary().getFieldName(tag.intValue())
 				+ " (" + field.getField() + ")"
 				+ " = ";
 			
-			if( dataDictionary.hasFieldValue(tag.intValue()) ) {
-				String value = dataDictionary.getValueName( tag.intValue(), field.getValue() );
+			if( dataDictionary.getDataDictionary().hasFieldValue(tag.intValue()) ) {
+				String value = dataDictionary.getDataDictionary().getValueName( tag.intValue(), field.getValue() );
 				result += field.getObject().toString();
 				if( value != null )
-					result += " (" + dataDictionary.getValueName(tag.intValue(), field.getValue() ) + ")";
+					result += " (" + dataDictionary.getDataDictionary().getValueName(tag.intValue(), field.getValue() ) + ")";
 			} else {
 				result += field.getObject().toString();				
 			}
@@ -83,9 +81,9 @@ public class MessageTreeModel implements TreeModel {
 	private ArrayList trailerFields = new ArrayList();
 	
 	private Message message = null;
-	private DataDictionary dataDictionary = null;
+	private DataDictionaryAccess dataDictionary = null;
 	
-	MessageTreeModel( Message aMessage, DataDictionary aDataDictionary ) {
+	MessageTreeModel( Message aMessage, DataDictionaryAccess aDataDictionary ) {
 		message = aMessage;
 		dataDictionary = aDataDictionary;
 		if( message == null ) return;
