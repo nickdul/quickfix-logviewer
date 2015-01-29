@@ -89,7 +89,7 @@ public class MessageTable extends JTable {
 		int tag = Integer.parseInt(value);
 		DataDictionary dataDictionary = dm.getDataDictionary();
 		
-		if( dataDictionary.isHeaderField(tag) || dataDictionary.isTrailerField(tag) ) {
+		if( dataDictionary.isHeaderField(tag) || Category.isTrailerField(dataDictionary, tag) ) {
 			if( column == tagColumn )
 				r.setForeground(new Color(128,128,255));
 			else if( column == tagColumn + 1 )

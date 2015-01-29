@@ -20,6 +20,8 @@
 package quickfix.logviewer;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.net.URL;
 
 public class Frame extends JFrame {
 	
@@ -40,14 +42,40 @@ public class Frame extends JFrame {
 		
 		pane.setDividerLocation(300);
 		
+        JToolBar toolbar = new JToolBar();
+        toolbar.setFloatable(false);
+        addButtons(toolbar, pane);
+
         getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(toolbar, BorderLayout.NORTH);
 		getContentPane().add( pane, BorderLayout.CENTER );
-		getContentPane().add( progressBarPanel, BorderLayout.PAGE_END );
+        getContentPane().add(progressBarPanel, BorderLayout.SOUTH);
+
 		setTitle( null );
 		setSize( 800, 600 );
         fileLoaded( false );
         menuBar.addActionListener(pane);
 	}
+
+    private void addButtons(JToolBar toolbar, ActionListener l) {
+        toolbar.add(makeButton("open.gif", "Open", "Open FIX log file", l));
+        toolbar.add(makeButton("delete_obj.gif", "Close", "Close current tab", l));
+        toolbar.addSeparator(new Dimension(20, 10));
+        toolbar.add(makeButton("sync.png", "Reload", "Reload active tab", l));
+    }
+
+    private JButton makeButton(String imageName, String actionCommand, String toolTipText, ActionListener l)
+    {
+        URL imageURL = Thread.currentThread().getContextClassLoader().getResource("quickfix/logviewer/images/" + imageName);
+        JButton button = new JButton();
+        button.setActionCommand(actionCommand);
+        button.addActionListener(l);
+        button.setText(actionCommand);
+        button.setToolTipText(toolTipText);
+        button.setIcon(new ImageIcon(imageURL));
+        button.setFocusable(false);
+        return button;
+    }
 
 	public void fileLoaded(boolean value) {
 		if( !value )

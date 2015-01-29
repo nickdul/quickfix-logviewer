@@ -107,7 +107,7 @@ public class LogFile {
 	public static char getDelimiter( String line ) {
 		if( line.length() < 10 )
 			return 0;
-		return line.charAt(9);
+		return line.contains("FIXT") ? line.charAt(10) :  line.charAt(9);
 	}
 	
 	public ArrayList parseMessages( ProgressBarPanel progressBar, int startingPosition, int endingPosition ) throws IOException, CancelException {

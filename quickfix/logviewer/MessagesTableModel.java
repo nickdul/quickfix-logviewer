@@ -263,9 +263,9 @@ public class MessagesTableModel extends AbstractTableModel {
 				int tag = fieldFilter.getTag();
 				StringField field = new StringField( tag, "" );
 				try {
-					if( dataDictionary.isHeaderField(tag) )
+					if(isHeaderField(tag))
 						message.getHeader().getField( field );
-					else if( dataDictionary.isTrailerField(tag) )
+					else if(isTrailerField(tag))
 						message.getTrailer().getField( field );
 					else
 						message.getField( field );
@@ -326,6 +326,14 @@ public class MessagesTableModel extends AbstractTableModel {
 		fireTableStructureChanged();
 	}
 	
+	private boolean isTrailerField(int tag) {
+		return trailerTags.contains(tag); // Category.isTrailerField(dataDictionary, tag);
+	}
+
+	private boolean isHeaderField(int tag) {
+		return headerTags.contains(tag); // dataDictionary.isHeaderField(tag);
+	}
+
 	public ArrayList getFilter() {
 		return filter;
 	}
@@ -340,10 +348,9 @@ public class MessagesTableModel extends AbstractTableModel {
 
 	private String getDisplayString( Message message, int tag, boolean rawValue ) {
 		FieldMap map = message;
-        DataDictionary dataDictionary = this.dataDictionary.getDataDictionary();
-		if( dataDictionary.isHeaderField(tag) ) {
+		if(isHeaderField(tag)) {
 			map = message.getHeader();
-		} else if( dataDictionary.isTrailerField(tag) ) {
+		} else if(isTrailerField(tag)) {
 			map = message.getTrailer();
 		}
 		
@@ -351,9 +358,10 @@ public class MessagesTableModel extends AbstractTableModel {
 			return "";
 		
 		try {
+			DataDictionary dictionary = dataDictionary.getDataDictionary();
 			StringBuffer value = new StringBuffer();
-			if( dataDictionary.hasFieldValue( tag ) ) {
-				value.append(dataDictionary.getValueName( tag, map.getString( tag )));
+			if( dictionary.hasFieldValue( tag ) ) {
+				value.append(dictionary.getValueName( tag, map.getString( tag )));
 				if( !rawValue )  {
 					value.append(" (")
 					.append(map.getString( tag ))

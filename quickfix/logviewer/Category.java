@@ -19,9 +19,14 @@
 
 package quickfix.logviewer;
 
+import quickfix.DataDictionary;
 import quickfix.field.MsgType;
 
 public final class Category {
+
+	public static boolean isTrailerField(DataDictionary dataDictionary, int tag) {
+		return dataDictionary.isMsgField(DataDictionary.TRAILER_ID, tag);
+	}
 
 	public static int categoryToFilterType( String[] category ) {
 		if( category == Indication )

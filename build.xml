@@ -56,7 +56,7 @@
     <!-- Modules -->
     <!-- Module quickfix-logviewer -->
     <dirname property="basedir" file="${ant.file}"/>
-    <property name="compiler.args.quickfix-logviewer" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+    <property name="compiler.args.quickfix-logviewer" value="-encoding UTF-8 -source 1.7 ${compiler.args}"/>
     <property name="output.dir" value="${basedir}/build"/>
     <property name="quickfix-logviewer.output.dir" value="${output.dir}/classes/main"/>
     <property name="quickfix-logviewer.testoutput.dir" value="${output.dir}/classes/test"/>
@@ -95,14 +95,12 @@
     <patternset id="excluded.from.compilation.quickfix-logviewer">
         <patternset refid="excluded.from.module.quickfix-logviewer"/>
     </patternset>
-    <path id="sourcepath">
-        <dirset dir="${basedir}/../../projects">
-            <include name="quickfix-logviewer-master"/>
-        </dirset>
+    <path id="sourcepath" path="${basedir}/quickfix">
     </path>
     <target name="compile.module.quickfix-logviewer"
             depends="compile.production,compile.tests"
             description="Compile module quickfix-logviewer"/>
+
     <target name="compile.production"
             description="Compile module quickfix-logviewer; production classes">
         <mkdir dir="${quickfix-logviewer.output.dir}"/>
@@ -115,18 +113,21 @@
             <patternset refid="excluded.from.compilation.quickfix-logviewer"/>
         </javac>
         <copy todir="${quickfix-logviewer.output.dir}">
-            <fileset dir="${basedir}">
-                <patternset refid="compiler.resources"/>
-                <type type="file"/>
-            </fileset>
+            <fileset dir="${basedir}" excludes="**/*.java" includes="quickfix/**/*"/>
         </copy>
     </target>
+
     <target name="compile.tests" depends="compile.production"
             description="compile module quickfix-logviewer; test classes" unless="skip.tests"/>
+
     <target name="clean.module.quickfix-logviewer" description="cleanup module">
         <delete dir="${quickfix-logviewer.output.dir}"/>
         <delete dir="${quickfix-logviewer.testoutput.dir}"/>
     </target>
+    <target name="clean.all" description="cleanup build directory">
+        <delete dir="${output.dir}"/>
+    </target>
+
     <target name="init" description="Build initialization">
         <!-- Perform any build initialization in this target -->
     </target>
@@ -134,23 +135,21 @@
     <target name="build.modules" depends="init, clean, compile.module.quickfix-logviewer"
             description="build all modules"/>
     <target name="all" depends="build.modules" description="build all"/>
-    <target name="jar" depends="build.modules">
-        <jar destfile="${output.dir}/quickfix-logviewer.jar"
+
+    <target name="dist" depends="clean.all, build.modules">
+        <jar destfile="${output.dir}/dist/quickfix-logviewer.jar"
+             duplicate="preserve"
              basedir="${quickfix-logviewer.output.dir}"
-             excludes="**/Test.class"
-                />
-    </target>
-    <target name="dist" depends="jar">
-        <property name="dist.dir" value="${output.dir}/dist"/>
-        <delete dir="${dist.dir}" quiet="true"/>
-        <mkdir dir="${dist.dir}"/>
-        <copy todir="${dist.dir}">
-            <fileset dir="lib">
-                <exclude name="junit.jar"/>
-                <exclude name="*.sh"/>
-            </fileset>
-            <fileset file="${output.dir}/quickfix-logviewer.jar"/>
-        </copy>
-        <echo message="Released to ${dist.dir}"/>
+             includes="**/*">
+            <zipgroupfileset dir="lib" includes="quickfix*.jar"/>
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+
+                <attribute name="Implementation-Vendor" value="Deltix Inc."/>
+                <attribute name="Implementation-Title" value="QuickFIX LogViewer"/>
+
+                <attribute name="Main-Class" value="quickfix.logviewer.Main"/>
+            </manifest>
+        </jar>
     </target>
 </project>

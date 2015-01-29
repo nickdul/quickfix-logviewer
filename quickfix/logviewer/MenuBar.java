@@ -81,8 +81,8 @@ public class MenuBar extends javax.swing.JMenuBar implements ActionListener {
 		int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 		fileOpen.setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_O, keyMask ) );
 		fileMenu.add(fileOpen);
-		fileMenu.add( openDD );
-		fileClose.setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_W, keyMask ) );			fileMenu.add( fileClose );
+		fileClose.setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_W, keyMask ) );			
+		fileMenu.add( fileClose );
 		fileMenu.addSeparator();
 		fileExportMenu.add( fileExportFIX );
 		fileExportMenu.add( fileExportXML );

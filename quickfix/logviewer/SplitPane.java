@@ -19,7 +19,6 @@
 
 package quickfix.logviewer;
 
-import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.StringField;
 
@@ -37,6 +36,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class SplitPane extends JSplitPane
 	implements ListSelectionListener, ActionListener, MouseListener, ChangeListener {
@@ -51,9 +51,12 @@ public class SplitPane extends JSplitPane
 	private JTabbedPane upperTabbedPane = null;
 	private DefaultDataDictionaryAccess dataDictionary = null;
 	private Timer tracer = null;
+	private ShowRemoveColumnsDialog columnsDialog;
 
 	private Message message = null;
-    private ShowRemoveColumnsDialog columnsDialog;
+
+    private final HashMap<MessagesTableModel, LogSourceInfo> sourceInfoMap = new HashMap<>();
+
 
 	public SplitPane(
 		Frame aFrame,
@@ -95,8 +98,9 @@ public class SplitPane extends JSplitPane
 
 	public void actionPerformed(final ActionEvent e) {
 		Object source = e.getSource();
+        final String action = e.getActionCommand();
 
-		if( source == MenuBar.fileClose ) {
+		if( source == MenuBar.fileClose || "Close".equals(action)) {
 			closeFile();
 		} else if( source == MenuBar.fileTrace ) {
 			if( tracer.isRunning() )
@@ -154,10 +158,10 @@ public class SplitPane extends JSplitPane
 				public void run() {
 					Object source = e.getSource();
 
-					if( source == MenuBar.fileOpen ) {
+					if( source == MenuBar.fileOpen || "Open".equals(action)) {
 						openFile();
-                    } else if( source == MenuBar.openDD ) {
-                        openDD();
+                    } else if( "Reload".equals(action) ) {
+                        reloadFile();
                     } else if( source == MenuBar.fileExportFIX ) {
 						exportFile( source );
 					} else if( source == MenuBar.fileExportXML ) {
@@ -190,27 +194,20 @@ public class SplitPane extends JSplitPane
 		}
 	}
 
-    private void openDD()
-    {
-        FileOpenDialog dialog = new FileOpenDialog( frame );
-        dialog.setVisible( true );
-        final File file = dialog.getFile();
-        dialog.dispose();
+    private void reloadFile() {
+        LogSourceInfo logSourceInfo = sourceInfoMap.get(this.currentModel);
+        if (logSourceInfo != null)
         try {
-            DataDictionary d = new DataDictionary(file.getAbsolutePath());
-            dataDictionary.setDataDictionary(d);
-            currentModel.viewAll();
-//            TableColumnModel columnModel = currentTable.getColumnModel();
-//            int columnCount = columnModel.getColumnCount();
-//            for (int i = 0; i < columnCount; i++) {
-//                columnModel.getColumn(i).setHeaderValue(columnModel.getColumn(i).getHeaderValue());
-//            }
-//            currentModel.fireTableChanged(new TableModelEvent(currentModel, 0, currentModel.getRowCount()));
-//            currentTable.repaint();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                LogFile logFile = new LogFile(logSourceInfo.file, this.dataDictionary);
+                ArrayList messages = logFile.parseMessages(this.progressBar, logSourceInfo.startTime, logSourceInfo.endTime);
+                this.currentModel.setMessages(messages, this.progressBar);
 
+                System.gc();
+            } catch (IOException e) {
+                System.out.println(e);
+            } catch (CancelException e) {
+                closeFile();
+        }
     }
 
     private void openFile() {
@@ -238,6 +235,8 @@ public class SplitPane extends JSplitPane
 				currentModel.setMessages( messages, progressBar );
 				menuBar.reset();
 				menuBar.setFileOpen( true );
+
+                sourceInfoMap.put(this.currentModel, new LogSourceInfo(file, startTime, endTime));
 			} catch( CancelException e ) {
 				closeFile();
 			} catch( FileNotFoundException e ) {
@@ -312,6 +311,10 @@ public class SplitPane extends JSplitPane
 	}
 
 	private void closeFile() {
+        MessagesTable table = getCurrentTable();
+        if (table != null) {
+            this.sourceInfoMap.remove((MessagesTableModel)table.getModel());
+        }
 		upperTabbedPane.remove( upperTabbedPane.getSelectedComponent() );
 		menuBar.setFileOpen( upperTabbedPane.getComponentCount() > 0 );
 		System.gc();
@@ -378,12 +381,34 @@ public class SplitPane extends JSplitPane
 	}
 
 	public void stateChanged(ChangeEvent e) {
-		JScrollPane scrollPane = ((JScrollPane)upperTabbedPane.getSelectedComponent());
-		frame.fileLoaded( scrollPane != null );
-		if( scrollPane == null ) return;
+        MessagesTable table = getCurrentTable();
+        this.frame.fileLoaded(table != null);
+        if (table == null) {
+            return;
+        }
+        this.currentTable = table;
+        this.currentModel = ((MessagesTableModel)this.currentTable.getModel());
+        this.menuBar.setSelectedFilter(this.currentModel.getFilterType());
+    }
 
-		currentTable = (MessagesTable)scrollPane.getViewport().getView();
-		currentModel = (MessagesTableModel)currentTable.getModel();
-		menuBar.setSelectedFilter( currentModel.getFilterType() );
+    private MessagesTable getCurrentTable() {
+        JScrollPane scrollPane = (JScrollPane)this.upperTabbedPane.getSelectedComponent();
+        this.frame.fileLoaded(scrollPane != null);
+        if (scrollPane == null) {
+            return null;
+        }
+        return (MessagesTable)scrollPane.getViewport().getView();
+    }
+
+    private static final class LogSourceInfo {
+        final File file;
+        final Date startTime;
+        final Date endTime;
+
+        private LogSourceInfo(File file, Date startTime, Date endTime) {
+            this.file = file;
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
 	}
 }
