@@ -273,7 +273,9 @@ public class MessagesTableModel extends AbstractTableModel {
 					int compareResults = 0;
 					String value1 = field.getValue();
 					String value2 = fieldFilter.getValue();
-					int fieldType = dataDictionary.getFieldType( tag );
+					int fieldType = dataDictionary.isField( tag )
+							   ? dataDictionary.getFieldType( tag )
+							   : -1;
 					
 					switch( fieldType ) {
 					// doubles
